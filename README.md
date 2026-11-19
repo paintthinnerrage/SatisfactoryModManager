@@ -34,6 +34,33 @@ for common issues and their solutions.
 * Downloads are cached in `%LOCALAPPDATA%\ficsit\downloadCache\`
 * Logs are stored in `%LOCALAPPDATA%\SatisfactoryModManager\logs`
 
+### Custom game install path
+
+Automatic detection covers Steam, Epic, and the other supported launchers. To add an install from a directory you choose, list it in `custom-installs.json` in SMM's config directory (the same folder as `settings.json`):
+
+* Windows: `%APPDATA%\SatisfactoryModManager\custom-installs.json`
+* Linux: `~/.local/share/SatisfactoryModManager/custom-installs.json`
+* macOS: `~/Library/Application Support/SatisfactoryModManager/custom-installs.json`
+
+SMM reads the file at startup. Create it, then restart the app. Each entry must be a Satisfactory install directory: the folder that contains `FactoryGame.exe`, `FactoryGameSteam.exe`, `FactoryGameEGS.exe`, `FactoryServer.exe`, or `FactoryServer.sh`, plus the matching version file under `Engine/Binaries`. Valid paths appear in the install list together with anything detection already found. When detection finds nothing, the custom paths are still available. A directory detection already found is listed once, under the detected launcher.
+
+```json
+{
+  "installs": [
+    "D:/Games/Satisfactory",
+    {
+      "path": "C:/SatisfactoryExperimental",
+      "branch": "Experimental",
+      "name": "Experimental"
+    }
+  ]
+}
+```
+
+`path` is the install directory. `~` expands to the home directory, and relative paths are resolved from the app's working directory, so absolute paths are the reliable form. `branch` is optional: `Stable` or `Experimental` (case-insensitive). When `branch` is omitted, a version file whose branch name contains `experimental` is treated as Experimental, and every other install is Stable. `name` is the label in the install list and defaults to `Custom`. A string entry is shorthand for an object that only sets `path`.
+
+A path that is missing or is not a Satisfactory install is left out of the install list. SMM logs the path and the reason at error level (see the log location above). On Windows, SMM launches the game executable directly. On Linux and macOS it launches `FactoryServer.sh` for a Linux dedicated server. Start a Windows client on Linux or macOS with your usual launcher. Mod files are still managed for that path.
+
 ## Development
 
 ### Dependencies
